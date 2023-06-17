@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.13;
 
 interface ITaxable {
     function setTaxTiersTwap(uint8 _index, uint256 _value) external returns (bool);
@@ -11,6 +11,8 @@ interface ITaxable {
 
     function disableAutoCalculateTax() external;
 
+    function taxRate() external returns (uint256);
+    
     function setTaxCollectorAddress(address _taxCollectorAddress) external;
 
     function setTaxRate(uint256 _taxRate) external;
@@ -18,6 +20,8 @@ interface ITaxable {
     function setBurnThreshold(uint256 _burnThreshold) external;
 
     function excludeAddress(address _address) external returns (bool);
+
+    function isAddressExcluded(address _address) external returns (bool);
 
     function includeAddress(address _address) external returns (bool);
 

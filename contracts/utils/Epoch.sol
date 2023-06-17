@@ -1,6 +1,6 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.13;
 
-import '@openzeppelin/contracts/math/SafeMath.sol';
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 import '../owner/Operator.sol';
 
@@ -28,14 +28,14 @@ contract Epoch is Operator {
     /* ========== Modifier ========== */
 
     modifier checkStartTime {
-        require(now >= startTime, 'Epoch: not started yet');
+        require(block.timestamp >= startTime, 'Epoch: not started yet');
 
         _;
     }
 
     modifier checkEpoch {
         uint256 _nextEpochPoint = nextEpochPoint();
-        if (now < _nextEpochPoint) {
+        if (block.timestamp < _nextEpochPoint) {
             require(msg.sender == operator(), 'Epoch: only operator allowed for pre-epoch');
             _;
         } else {
@@ -45,7 +45,7 @@ contract Epoch is Operator {
                 lastEpochTime = _nextEpochPoint;
                 ++epoch;
                 _nextEpochPoint = nextEpochPoint();
-                if (now < _nextEpochPoint) break;
+                if (block.timestamp < _nextEpochPoint) break;
             }
         }
     }

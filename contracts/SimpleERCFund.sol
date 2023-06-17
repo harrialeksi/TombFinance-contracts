@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.13;
 
 import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/SafeERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 import './owner/Operator.sol';
 import './interfaces/ISimpleERCFund.sol';
@@ -17,7 +17,7 @@ contract SimpleERCFund is ISimpleERCFund, Operator {
         string memory reason
     ) public override {
         IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
-        emit Deposit(msg.sender, now, reason);
+        emit Deposit(msg.sender, block.timestamp, reason);
     }
 
     function withdraw(
@@ -27,7 +27,7 @@ contract SimpleERCFund is ISimpleERCFund, Operator {
         string memory reason
     ) public override onlyOperator {
         IERC20(token).safeTransfer(to, amount);
-        emit Withdrawal(msg.sender, to, now, reason);
+        emit Withdrawal(msg.sender, to, block.timestamp, reason);
     }
 
     event Deposit(address indexed from, uint256 indexed at, string reason);

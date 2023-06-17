@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.13;
 
 interface IBasisAsset {
     function mint(address recipient, uint256 amount) external returns (bool);

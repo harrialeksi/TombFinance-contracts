@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.12;
+pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts/math/Math.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
+import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./lib/Babylonian.sol";
 import "./owner/Operator.sol";
@@ -113,13 +114,13 @@ contract Treasury is ContractGuard {
     }
 
     modifier checkCondition {
-        require(now >= startTime, "Treasury: not started yet");
+        require(block.timestamp >= startTime, "Treasury: not started yet");
 
         _;
     }
 
     modifier checkEpoch {
-        require(now >= nextEpochPoint(), "Treasury: not opened yet");
+        require(block.timestamp >= nextEpochPoint(), "Treasury: not opened yet");
 
         _;
 
@@ -472,14 +473,14 @@ contract Treasury is ContractGuard {
         if (daoFundSharedPercent > 0) {
             _daoFundSharedAmount = _amount.mul(daoFundSharedPercent).div(10000);
             IERC20(tomb).transfer(daoFund, _daoFundSharedAmount);
-            emit DaoFundFunded(now, _daoFundSharedAmount);
+            emit DaoFundFunded(block.timestamp, _daoFundSharedAmount);
         }
 
         uint256 _devFundSharedAmount = 0;
         if (devFundSharedPercent > 0) {
             _devFundSharedAmount = _amount.mul(devFundSharedPercent).div(10000);
             IERC20(tomb).transfer(devFund, _devFundSharedAmount);
-            emit DevFundFunded(now, _devFundSharedAmount);
+            emit DevFundFunded(block.timestamp, _devFundSharedAmount);
         }
 
         _amount = _amount.sub(_daoFundSharedAmount).sub(_devFundSharedAmount);
@@ -487,7 +488,7 @@ contract Treasury is ContractGuard {
         IERC20(tomb).safeApprove(masonry, 0);
         IERC20(tomb).safeApprove(masonry, _amount);
         IMasonry(masonry).allocateSeigniorage(_amount);
-        emit MasonryFunded(now, _amount);
+        emit MasonryFunded(block.timestamp, _amount);
     }
 
     function _calculateMaxSupplyExpansionPercent(uint256 _tombSupply) internal returns (uint256) {
@@ -536,7 +537,7 @@ contract Treasury is ContractGuard {
                 if (_savedForBond > 0) {
                     seigniorageSaved = seigniorageSaved.add(_savedForBond);
                     IBasisAsset(tomb).mint(address(this), _savedForBond);
-                    emit TreasuryFunded(now, _savedForBond);
+                    emit TreasuryFunded(block.timestamp, _savedForBond);
                 }
             }
         }
